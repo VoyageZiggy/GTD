@@ -18,13 +18,13 @@ class RandomWords extends StatefulWidget {
 class RandndomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
-  final _saved = Set<WordPair>();
+  final _saved = <WordPair>{};
 
   Widget _buildSuggestions() {
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
-          if (i.isOdd) return Divider();
+          if (i.isOdd) return const Divider();
 
           final index = i ~/ 2;
 
@@ -57,10 +57,32 @@ class RandndomWordsState extends State<RandomWords> {
         });
   }
 
+  void _pushSaved() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      final tiles = _saved.map((pair) {
+        return ListTile(
+          title: Text(
+            pair.asPascalCase,
+            style: _biggerFont,
+          ),
+        );
+      });
+      final divied =
+          ListTile.divideTiles(tiles: tiles, context: context).toList();
+      return Scaffold(
+          appBar: AppBar(title: const Text('Saved Suggestionss')),
+          body: ListView(children: divied));
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Startup Name Generator')),
+      appBar: AppBar(
+          title: const Text('Startup Name Generator'),
+          actions: <Widget>[
+            IconButton(icon: const Icon(Icons.list), onPressed: _pushSaved)
+          ]),
       body: _buildSuggestions(),
     );
   }
